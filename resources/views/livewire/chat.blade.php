@@ -32,12 +32,25 @@
             </div>
 
             <div id="chat-box" class="flex-1 overflow-y-auto p-6 space-y-3 bg-gray-50">
-                @if($selectedUser)
-                <div class="text-gray-500">No messages yet with {{ $selectedUser->name }}.</div>
+                @foreach ($messages as $message)
+                @if ($message->sender_id === Auth::id())
+                <!-- Sent message -->
+                <div class="flex justify-end">
+                    <span class="bg-blue-500 text-white px-4 py-2 rounded-lg max-w-xs text-sm">
+                        {{ $message->message }}
+                    </span>
+                </div>
                 @else
-                <div class="text-gray-400">Please select a user from the sidebar.</div>
+                <!-- Received message -->
+                <div class="flex justify-start">
+                    <span class="bg-gray-300 text-gray-900 px-4 py-2 rounded-lg max-w-xs text-sm">
+                        {{ $message->message }}
+                    </span>
+                </div>
                 @endif
+                @endforeach
             </div>
+
 
             <form wire:submit.prevent="submit" class="flex border-t px-6 py-4">
                 <input
