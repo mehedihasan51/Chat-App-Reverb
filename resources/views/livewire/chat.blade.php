@@ -51,6 +51,8 @@
                 @endforeach
             </div>
 
+            <div id="typing-indicator" class="px-4 pb-1 text-xs text-gray-400"></div>
+
 
             <form wire:submit.prevent="submit" class="flex border-t px-6 py-4">
                 <input
@@ -69,8 +71,22 @@
 
         </div>
     </div>
-
-
-
-
 </div>
+
+
+<script>
+
+    // document.addEventListener('livewire:initialized',() => {
+    //     Livewire.on('userTyping', function (event) {
+    //         console.log(event);
+    //     });
+    // });
+
+    document.addEventListener('livewire:load', function () {
+        Livewire.on('userTyping', function (event) {
+            console.log(event);
+            
+        });
+    });
+
+</script>

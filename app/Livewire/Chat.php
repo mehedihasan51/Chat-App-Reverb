@@ -69,6 +69,27 @@ class Chat extends Component
         broadcast(new MessageSent($message));
     }
 
+    // public function updatedNewMessage()
+    // {
+    //     // $this->dispatch('userTyping', userId: $this->loginId, userName: Auth::id(), selectedUserId: $this->selectedUser->id);
+    //     $this->dispatch('userTyping', [
+    //         'userId' => $this->loginId,
+    //         'userName' => Auth::user()->name,
+    //         'selectedUserId' => $this->selectedUser->id
+    //     ]);
+    // }
+
+
+    // updateNew message typing
+    public function updatedNewMessage()
+    {
+        $this->dispatch('userTyping', [
+            'userId' => $this->loginId,
+            'userName' => Auth::id(),
+            'selectedUserId' => $this->selectedUser
+        ]);
+    }
+
     public function getListeners()
     {
         return [
