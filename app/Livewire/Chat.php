@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Models\User;
 use Livewire\Component;
+use App\Events\MessageSent;
 use App\Models\ChatMessage;
 use Illuminate\Support\Facades\Auth;
 
@@ -44,6 +45,7 @@ class Chat extends Component
             $query->where('sender_id', $this->selectedUser->id)
                 ->orWhere('receiver_id', $this->selectedUser->id);
         })->get();
+        
         $this->newMessage = '';
     }
 
@@ -52,25 +54,25 @@ class Chat extends Component
         if (!$this->newMessage) {
             return;
         }
-        $messages = ChatMessage::create([
+        $message = ChatMessage::create([
             'sender_id' => Auth::id(),
             'receiver_id' => $this->selectedUser->id,
             'message' => $this->newMessage,
         ]);
 
-        $this->messages->push($messages);
+        $this->messages->push($message);
 
 
         $this->newMessage = '';
 
         // Broadcast the message
-        broadcast(new \App\Events\MessageSent($messages))->toOthers();
+        broadcast(new MessageSent($message));
     }
 
     public function getListeners()
     {
         return [
-            "echo-private:chat.{$this->loginId},MessageSent" => 'newChatMessageNotification',
+            "echo-private:chat.{$this->loginId}, MessageSent" => 'newChatMessageNotification',
         ];
     }
     /**
@@ -79,10 +81,12 @@ class Chat extends Component
      * @param array $event
      * @return void
      */
-    public function newChatMessageNotification($event)
+    public function newChatMessageNotification($message)
     {
-        if ($event['sender_id'] == $this->selectedUser->id) {
-            $this->messages->push((object) $event);
+
+        if ($message['sender_id'] == $this->selectedUser->id) {
+           $messageObj = ChatMessage::find($message['id']);
+           $this->messages->push($messageObj);
         }
     }
 
