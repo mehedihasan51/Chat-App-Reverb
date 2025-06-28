@@ -72,7 +72,7 @@ class Chat extends Component
     public function getListeners()
     {
         return [
-            "echo-private:chat.{$this->loginId}, MessageSent" => 'newChatMessageNotification',
+            "echo-private:chat.{$this->loginId},MessageSent" => 'newChatMessageNotification',
         ];
     }
     /**
