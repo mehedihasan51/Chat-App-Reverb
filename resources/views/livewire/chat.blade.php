@@ -57,7 +57,7 @@
             <form wire:submit.prevent="submit" class="flex border-t px-6 py-4">
                 <input
                     type="text"
-                    wire:model="newMessage"
+                    wire:model.live="newMessage"
                     placeholder="Type your message..."
                     class="flex-1 border rounded-l-md px-4 py-2 focus:outline-none focus:ring focus:border-indigo-300"
                     @if(!$selectedUser) disabled @endif>
@@ -76,17 +76,35 @@
 
 <script>
 
-    // document.addEventListener('livewire:initialized',() => {
-    //     Livewire.on('userTyping', function (event) {
-    //         console.log(event);
-    //     });
-    // });
-
-    document.addEventListener('livewire:load', function () {
-        Livewire.on('userTyping', function (event) {
-            console.log(event);
-            
-        });
+document.addEventListener('livewire:initialized', () => {
+    Livewire.on('userTyping', function (event) {
+        if (window.Echo && window.Echo.private) {
+            window.Echo.private(`chat.${event.selectedUserId}`)
+                .whisper('typing', {
+                    userId: event.userId,
+                    userName: event.userName
+                });
+        }
     });
+
+    if (window.Echo && window.Echo.private) {
+        window.Echo.private(`chat.{{$loginId}}`)
+            .listenForWhisper('typing', (event) => {
+                const t = document.getElementById('typing-indicator');
+                if (t) {
+                    t.innerText = `${event.userName} is typing...`;
+                    
+                }
+                setTimeout(() => {
+                    if (t) {
+                        t.innerText = '';
+                    }
+                }, 3000); // Clear typing indicator after 3 seconds
+            });
+    }
+});
+
+
+
 
 </script>
